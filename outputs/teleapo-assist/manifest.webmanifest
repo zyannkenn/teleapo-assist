@@ -1,0 +1,17 @@
+{
+  "name": "テレアポ架電サポート",
+  "short_name": "テレアポ",
+  "description": "Androidで営業テレアポを素早く回すための架電サポートツール",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f7f8f5",
+  "theme_color": "#122620",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
