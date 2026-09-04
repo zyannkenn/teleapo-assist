@@ -218,7 +218,7 @@
 
     .status-grid {
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 8px;
     }
 
@@ -234,6 +234,36 @@
     .status[data-kind="hot"] { background: #eef6ff; color: var(--blue); border-color: #d5e7ff; }
     .status[data-kind="later"] { background: #fff6ed; color: var(--amber); border-color: #ffe3c7; }
     .status[data-kind="bad"] { background: #fff1f2; color: var(--red); border-color: #ffd4d9; }
+    .status[data-kind="delete"] { background: #f8fafc; color: #475569; border-color: #d9e0ec; }
+    .status.active {
+      outline: 3px solid rgba(11, 88, 201, .16);
+      border-color: var(--blue);
+    }
+
+    .detail-grid {
+      display: none;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .detail-grid.show {
+      display: grid;
+    }
+
+    .detail-status {
+      min-height: 58px;
+      border-radius: 8px;
+      background: #fff;
+      border: 1px solid var(--line);
+      color: var(--ink);
+      font-weight: 800;
+    }
+
+    .status-help {
+      color: var(--muted);
+      font-size: 12px;
+      min-height: 18px;
+    }
 
     .notes {
       display: grid;
@@ -571,15 +601,14 @@
         </div>
 
         <div class="status-grid" aria-label="通話結果">
-          <button class="status" data-result="不在">不在</button>
-          <button class="status" data-result="担当者不在">担当者不在</button>
-          <button class="status" data-result="再架電" data-kind="later">再架電</button>
-          <button class="status" data-result="見込みあり" data-kind="hot">見込みあり</button>
-          <button class="status" data-result="資料送付" data-kind="hot">資料送付</button>
-          <button class="status" data-result="受付NG" data-kind="bad">受付NG</button>
-          <button class="status" data-result="番号違い" data-kind="bad">番号違い</button>
-          <button class="status" data-result="完了">完了</button>
+          <button class="status" data-category="再架電" data-kind="later">再架電</button>
+          <button class="status" data-category="NG" data-kind="bad">NG</button>
+          <button class="status" data-category="進展" data-kind="hot">進展</button>
+          <button class="status" data-category="削除" data-kind="delete">削除</button>
         </div>
+
+        <div class="status-help" id="statusHelp">まず大きいカードを選んでください</div>
+        <div class="detail-grid" id="detailGrid" aria-label="詳細ステータス"></div>
 
         <div class="notes">
           <input id="callbackAt" type="datetime-local" aria-label="再架電日時">
@@ -727,7 +756,7 @@
       $("#targetName").textContent = contact.company || contact.name || "名前なし";
       $("#targetCompany").textContent = contact.name || "担当者なし";
       $("#targetPhone").textContent = displayPhone(contact.phone);
-      $("#lastStatus").textContent = contact.result || "未記録";
+      $("#lastStatus").textContent = formatStatus(contact) || "未記録";
       $("#memo").value = contact.memo || "";
       $("#callbackAt").value = contact.callbackAt || "";
 
@@ -775,13 +804,14 @@
         button.type = "button";
         button.addEventListener("click", () => {
           state.current = index;
+          resetStatusPicker();
           render();
           switchTab("action");
         });
         button.innerHTML = `
           <div class="row-main">
             <span>${escapeHtml(contact.company || contact.name || "名前なし")}</span>
-            <span>${escapeHtml(contact.result || "")}</span>
+            <span>${escapeHtml(formatStatus(contact) || "")}</span>
           </div>
           <div class="row-sub">${escapeHtml(contact.name || "担当者なし")}　${escapeHtml(displayPhone(contact.phone))}</div>
         `;
@@ -860,6 +890,8 @@
           company: guessedCompany,
           phone: guessedPhone,
           result: "",
+          statusCategory: "",
+          statusDetail: "",
           memo: "",
           callbackAt: "",
           updatedAt: ""
@@ -867,27 +899,76 @@
       }).filter((contact) => contact.phone || contact.name || contact.company);
     }
 
-    function markResult(result) {
+    const STATUS_DETAILS = {
+      "再架電": ["担当者不在", "コール音のみ"],
+      "NG": ["管理者NG", "本部のみ"],
+      "進展": ["資料請求", "アポ獲得！！"],
+      "削除": ["電話番号違い", "使われてない"]
+    };
+
+    let selectedCategory = "";
+
+    function formatStatus(contact) {
+      if (!contact) return "";
+      if (contact.statusCategory && contact.statusDetail) {
+        return `${contact.statusCategory} / ${contact.statusDetail}`;
+      }
+      return contact.result || "";
+    }
+
+    function selectCategory(category) {
       const contact = currentContact();
       if (!contact) return toast("先に架電先を追加してください");
-      contact.result = result;
+      selectedCategory = category;
+      $$(".status").forEach((button) => button.classList.toggle("active", button.dataset.category === category));
+      const detailGrid = $("#detailGrid");
+      detailGrid.innerHTML = "";
+      STATUS_DETAILS[category].forEach((detail) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "detail-status";
+        button.textContent = detail;
+        button.addEventListener("click", () => markResult(category, detail));
+        detailGrid.appendChild(button);
+      });
+      detailGrid.classList.add("show");
+      $("#statusHelp").textContent = `${category}の詳細を選んでください`;
+    }
+
+    function resetStatusPicker() {
+      selectedCategory = "";
+      $$(".status").forEach((button) => button.classList.remove("active"));
+      $("#detailGrid").innerHTML = "";
+      $("#detailGrid").classList.remove("show");
+      $("#statusHelp").textContent = "まず大きいカードを選んでください";
+    }
+
+    function markResult(category, detail) {
+      const contact = currentContact();
+      if (!contact) return toast("先に架電先を追加してください");
+      contact.statusCategory = category;
+      contact.statusDetail = detail;
+      contact.result = `${category} / ${detail}`;
       contact.memo = $("#memo").value.trim();
       contact.callbackAt = $("#callbackAt").value;
       contact.updatedAt = new Date().toISOString();
       persist();
-      toast(`${result}で記録しました`);
+      toast(`${category} / ${detail}で記録しました`);
       if (state.current < state.contacts.length - 1) {
         state.current += 1;
       }
+      resetStatusPicker();
       render();
     }
 
     function toCsv() {
-      const header = ["名前", "会社", "電話番号", "結果", "再架電日時", "メモ", "更新日時"];
+      const header = ["名前", "会社", "電話番号", "ステータス", "詳細ステータス", "結果", "再架電日時", "メモ", "更新日時"];
       const lines = state.contacts.map((contact) => [
         contact.name,
         contact.company,
         contact.phone,
+        contact.statusCategory,
+        contact.statusDetail,
         contact.result,
         contact.callbackAt,
         contact.memo,
@@ -928,12 +1009,13 @@
     });
 
     $$(".status").forEach((button) => {
-      button.addEventListener("click", () => markResult(button.dataset.result));
+      button.addEventListener("click", () => selectCategory(button.dataset.category));
     });
 
     $("#nextButton").addEventListener("click", () => {
       if (!state.contacts.length) return toast("架電先がありません");
       state.current = Math.min(state.current + 1, state.contacts.length - 1);
+      resetStatusPicker();
       render();
     });
 
@@ -1029,6 +1111,8 @@
         company: $("#manualCompany").value.trim(),
         phone: $("#manualPhone").value.trim(),
         result: "",
+        statusCategory: "",
+        statusDetail: "",
         memo: "",
         callbackAt: "",
         updatedAt: ""
