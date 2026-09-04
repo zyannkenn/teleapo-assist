@@ -10,18 +10,19 @@
   <style>
     :root {
       color-scheme: light;
-      --ink: #15201c;
-      --muted: #64706b;
-      --line: #d9e0dc;
-      --paper: #f7f8f5;
+      --ink: #0f2147;
+      --muted: #71809f;
+      --line: #e3e9f4;
+      --paper: #f7faff;
       --panel: #ffffff;
-      --deep: #122620;
-      --mint: #d8f3dc;
-      --leaf: #2d6a4f;
-      --blue: #1d4ed8;
-      --amber: #b45309;
-      --red: #b91c1c;
-      --shadow: 0 18px 45px rgba(18, 38, 32, .12);
+      --deep: #073b8f;
+      --mint: #d9eaff;
+      --leaf: #0b58c9;
+      --blue: #0b58c9;
+      --amber: #ea6b1a;
+      --green: #168653;
+      --red: #e33447;
+      --shadow: 0 12px 28px rgba(13, 45, 94, .08);
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
 
@@ -29,7 +30,7 @@
 
     body {
       margin: 0;
-      background: linear-gradient(180deg, #eff5f0 0%, var(--paper) 38%, #f9faf7 100%);
+      background: #ffffff;
       color: var(--ink);
       min-height: 100svh;
     }
@@ -45,95 +46,99 @@
     }
 
     .app {
-      width: min(100%, 820px);
+      width: min(100%, 430px);
       margin: 0 auto;
-      padding: 14px;
+      padding: 10px 14px 18px;
       padding-bottom: calc(24px + env(safe-area-inset-bottom));
     }
 
     header {
       display: flex;
       align-items: center;
-      justify-content: space-between;
+      justify-content: center;
       gap: 12px;
-      margin: 4px 0 12px;
+      min-height: 50px;
+      margin: 0 0 8px;
+      position: relative;
     }
 
     .brand {
       display: flex;
       align-items: center;
-      gap: 10px;
+      justify-content: center;
+      gap: 8px;
       min-width: 0;
     }
 
     .mark {
-      width: 40px;
-      height: 40px;
-      border-radius: 8px;
-      background: var(--deep);
+      width: 24px;
+      height: 24px;
+      border-radius: 0;
+      background: transparent;
       display: grid;
       place-items: center;
-      color: white;
+      color: var(--deep);
       flex: 0 0 auto;
     }
 
     .brand h1 {
-      font-size: 18px;
+      font-size: 14px;
+      color: var(--deep);
       line-height: 1.1;
       margin: 0;
     }
 
     .brand p {
-      margin: 3px 0 0;
-      color: var(--muted);
-      font-size: 12px;
+      display: none;
     }
 
     .pill {
-      background: #eef7ef;
-      color: var(--leaf);
-      border: 1px solid #c9e8cf;
-      border-radius: 999px;
-      padding: 7px 10px;
+      position: absolute;
+      right: 0;
+      top: 13px;
+      background: transparent;
+      color: var(--deep);
+      border: 0;
+      padding: 0;
       font-size: 12px;
-      white-space: nowrap;
     }
 
     .grid {
-      display: grid;
-      gap: 12px;
+      display: block;
     }
 
     .panel {
-      background: rgba(255, 255, 255, .94);
-      border: 1px solid rgba(217, 224, 220, .9);
+      background: #ffffff;
+      border: 1px solid var(--line);
       border-radius: 8px;
-      box-shadow: var(--shadow);
+      box-shadow: none;
     }
 
     .hero {
-      padding: 18px;
+      padding: 0;
       display: grid;
-      gap: 15px;
+      gap: 8px;
+      border: 0;
+      box-shadow: none;
     }
 
     .meta {
       display: flex;
       justify-content: space-between;
       gap: 12px;
-      color: var(--muted);
+      display: none;
       font-size: 13px;
     }
 
     .target h2 {
-      margin: 0 0 8px;
-      font-size: clamp(24px, 8vw, 40px);
-      line-height: 1.05;
+      margin: 0;
+      font-size: 20px;
+      line-height: 1.2;
       letter-spacing: 0;
     }
 
     .target .company {
-      color: var(--muted);
+      color: var(--blue);
       font-size: 15px;
       min-height: 21px;
     }
@@ -142,14 +147,15 @@
       display: flex;
       align-items: center;
       gap: 10px;
-      padding: 12px;
-      background: #f1f5f2;
+      padding: 14px;
+      background: #fff;
       border: 1px solid var(--line);
       border-radius: 8px;
     }
 
     .phone strong {
-      font-size: clamp(24px, 8vw, 36px);
+      font-size: 16px;
+      color: var(--blue);
       letter-spacing: 0;
       overflow-wrap: anywhere;
       flex: 1;
@@ -176,7 +182,7 @@
     .call {
       min-height: 58px;
       border-radius: 8px;
-      background: var(--leaf);
+      background: var(--deep);
       color: white;
       display: flex;
       align-items: center;
@@ -195,7 +201,8 @@
     .next {
       min-height: 58px;
       border-radius: 8px;
-      background: var(--deep);
+      background: #eef5ff;
+      color: var(--deep);
       color: white;
       display: grid;
       place-items: center;
@@ -203,22 +210,22 @@
 
     .status-grid {
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 8px;
     }
 
     .status {
-      min-height: 48px;
+      min-height: 74px;
       border-radius: 8px;
-      background: #f4f6f3;
+      background: #f7f9fc;
       border: 1px solid var(--line);
       color: var(--ink);
       font-weight: 700;
     }
 
-    .status[data-kind="hot"] { background: #eef6ff; color: var(--blue); }
-    .status[data-kind="later"] { background: #fff7ed; color: var(--amber); }
-    .status[data-kind="bad"] { background: #fff1f2; color: var(--red); }
+    .status[data-kind="hot"] { background: #eef6ff; color: var(--blue); border-color: #d5e7ff; }
+    .status[data-kind="later"] { background: #fff6ed; color: var(--amber); border-color: #ffe3c7; }
+    .status[data-kind="bad"] { background: #fff1f2; color: var(--red); border-color: #ffd4d9; }
 
     .notes {
       display: grid;
@@ -241,9 +248,11 @@
     }
 
     .section {
-      padding: 14px;
+      padding: 0;
       display: grid;
       gap: 12px;
+      border: 0;
+      box-shadow: none;
     }
 
     .section-title {
@@ -267,7 +276,7 @@
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 6px;
-      background: #eef2ee;
+      background: #f3f6fb;
       padding: 5px;
       border-radius: 8px;
     }
@@ -275,14 +284,14 @@
     .tab {
       min-height: 38px;
       border-radius: 7px;
-      color: var(--muted);
+      color: #6f7fa1;
       background: transparent;
       font-weight: 700;
     }
 
     .tab.active {
       background: #fff;
-      color: var(--ink);
+      color: var(--deep);
       box-shadow: 0 1px 3px rgba(0, 0, 0, .08);
     }
 
@@ -339,23 +348,23 @@
     .list {
       display: grid;
       gap: 8px;
-      max-height: 300px;
+      max-height: none;
       overflow: auto;
       padding-right: 2px;
     }
 
     .row {
-      border: 1px solid var(--line);
+      border: 0;
+      border-bottom: 1px solid var(--line);
       background: #fff;
-      border-radius: 8px;
-      padding: 10px;
+      border-radius: 0;
+      padding: 12px 4px;
       display: grid;
       gap: 4px;
     }
 
     .row.current {
-      border-color: #83c5a1;
-      background: #f3fbf5;
+      background: #f7faff;
     }
 
     .row button {
@@ -409,7 +418,7 @@
       bottom: calc(14px + env(safe-area-inset-bottom));
       min-height: 46px;
       border-radius: 8px;
-      background: rgba(18, 38, 32, .96);
+      background: rgba(7, 38, 91, .96);
       color: white;
       display: none;
       place-items: center;
@@ -433,26 +442,57 @@
       fill: none;
     }
 
-    @media (min-width: 760px) {
-      .grid {
-        grid-template-columns: 1.1fr .9fr;
-        align-items: start;
-      }
+    .back {
+      position: absolute;
+      left: 0;
+      top: 7px;
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      background: transparent;
+      color: var(--deep);
+      display: none;
+      place-items: center;
+    }
 
-      .hero {
-        position: sticky;
-        top: 12px;
-      }
+    .app.action-mode .back { display: grid; }
+    .app.action-mode .section { display: none; }
+    .app:not(.action-mode) .hero { display: none; }
 
-      .status-grid {
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-      }
+    .search {
+      position: relative;
+    }
+
+    .search input {
+      padding-left: 38px;
+      height: 42px;
+    }
+
+    .search svg {
+      position: absolute;
+      left: 12px;
+      top: 10px;
+      color: #7a88a6;
+      width: 19px;
+      height: 19px;
+    }
+
+    .target-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 16px;
+      display: grid;
+      gap: 4px;
+      margin-bottom: 8px;
     }
   </style>
 </head>
 <body>
-  <main class="app">
+  <main class="app" id="app">
     <header>
+      <button class="back" id="backToList" aria-label="リストへ戻る" title="リストへ戻る">
+        <svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg>
+      </button>
       <div class="brand">
         <div class="mark" aria-hidden="true">
           <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.2 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.12.9.33 1.77.62 2.6a2 2 0 0 1-.45 2.11L8 9.71a16 16 0 0 0 6.29 6.29l1.28-1.28a2 2 0 0 1 2.11-.45c.83.29 1.7.5 2.6.62A2 2 0 0 1 22 16.92z"/></svg>
@@ -472,16 +512,18 @@
           <span id="lastStatus">未記録</span>
         </div>
 
-        <div class="target">
-          <h2 id="targetName">CSVを追加してください</h2>
-          <div class="company" id="targetCompany">会社名、担当者名、電話番号を読み込めます</div>
-        </div>
+        <div class="target-card">
+          <div class="target">
+            <h2 id="targetName">CSVを追加してください</h2>
+            <div class="company" id="targetCompany">会社名、担当者名、電話番号を読み込めます</div>
+          </div>
 
-        <div class="phone">
-          <strong id="targetPhone">---</strong>
-          <button class="icon-button" id="copyPhone" aria-label="電話番号をコピー" title="電話番号をコピー">
-            <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-          </button>
+          <div class="phone">
+            <strong id="targetPhone">---</strong>
+            <button class="icon-button" id="copyPhone" aria-label="電話番号をコピー" title="電話番号をコピー">
+              <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            </button>
+          </div>
         </div>
 
         <div class="call-row">
@@ -527,6 +569,10 @@
           <div class="actions">
             <button class="primary" id="openExport">リストを出力</button>
             <button class="secondary" id="copyListCsv">リストをコピー</button>
+          </div>
+          <div class="search">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input id="searchInput" placeholder="会社名・担当者名で検索" autocomplete="off">
           </div>
           <div class="list" id="contactList"></div>
         </div>
@@ -644,8 +690,8 @@
         return;
       }
 
-      $("#targetName").textContent = contact.name || "名前なし";
-      $("#targetCompany").textContent = contact.company || "会社名なし";
+      $("#targetName").textContent = contact.company || contact.name || "名前なし";
+      $("#targetCompany").textContent = contact.name || "担当者なし";
       $("#targetPhone").textContent = displayPhone(contact.phone);
       $("#lastStatus").textContent = contact.result || "未記録";
       $("#memo").value = contact.memo || "";
@@ -669,7 +715,26 @@
         return;
       }
 
-      state.contacts.forEach((contact, index) => {
+      const query = ($("#searchInput")?.value || "").trim().toLowerCase();
+      const visibleContacts = state.contacts
+        .map((contact, index) => ({ contact, index }))
+        .filter(({ contact }) => {
+          if (!query) return true;
+          return [contact.name, contact.company, contact.phone, contact.result]
+            .join(" ")
+            .toLowerCase()
+            .includes(query);
+        });
+
+      if (!visibleContacts.length) {
+        const empty = document.createElement("div");
+        empty.className = "empty";
+        empty.textContent = "一致する架電先がありません";
+        list.appendChild(empty);
+        return;
+      }
+
+      visibleContacts.forEach(({ contact, index }) => {
         const row = document.createElement("div");
         row.className = `row${index === state.current ? " current" : ""}`;
         const button = document.createElement("button");
@@ -677,13 +742,14 @@
         button.addEventListener("click", () => {
           state.current = index;
           render();
+          switchTab("action");
         });
         button.innerHTML = `
           <div class="row-main">
-            <span>${escapeHtml(contact.name || "名前なし")}</span>
-            <span>${escapeHtml(contact.result || "未記録")}</span>
+            <span>${escapeHtml(contact.company || contact.name || "名前なし")}</span>
+            <span>${escapeHtml(contact.result || "")}</span>
           </div>
-          <div class="row-sub">${escapeHtml(contact.company || "会社名なし")} / ${escapeHtml(displayPhone(contact.phone))}</div>
+          <div class="row-sub">${escapeHtml(contact.name || "担当者なし")}　${escapeHtml(displayPhone(contact.phone))}</div>
         `;
         row.appendChild(button);
         list.appendChild(row);
@@ -808,6 +874,8 @@
     }
 
     function switchTab(name) {
+      $("#app").classList.toggle("action-mode", name === "action");
+      if (name === "action") return;
       $$(".tab").forEach((item) => item.classList.toggle("active", item.dataset.tab === name));
       $$(".tab-panel").forEach((item) => item.classList.toggle("active", item.id === `tab-${name}`));
       if (name === "export") updateExportPreview();
@@ -825,6 +893,14 @@
       if (!state.contacts.length) return toast("架電先がありません");
       state.current = Math.min(state.current + 1, state.contacts.length - 1);
       render();
+    });
+
+    $("#backToList").addEventListener("click", () => {
+      switchTab("list");
+    });
+
+    $("#searchInput").addEventListener("input", () => {
+      renderList();
     });
 
     $("#copyPhone").addEventListener("click", async () => {
