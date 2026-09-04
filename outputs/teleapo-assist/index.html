@@ -387,6 +387,15 @@
       background: #fbfcfa;
     }
 
+    .export-box {
+      min-height: 180px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+      font-size: 12px;
+      line-height: 1.45;
+      white-space: pre;
+      overflow: auto;
+    }
+
     .hint {
       color: var(--muted);
       font-size: 12px;
@@ -515,6 +524,10 @@
             <h3>架電先</h3>
             <span id="countLabel">0件</span>
           </div>
+          <div class="actions">
+            <button class="primary" id="openExport">リストを出力</button>
+            <button class="secondary" id="copyListCsv">リストをコピー</button>
+          </div>
           <div class="list" id="contactList"></div>
         </div>
 
@@ -558,6 +571,11 @@
             <button class="primary" id="exportCsv">CSVをダウンロード</button>
             <button class="secondary" id="copyCsv">CSVをコピー</button>
           </div>
+          <div class="actions">
+            <button class="secondary" id="shareCsv">共有する</button>
+            <button class="secondary" id="refreshExport">表示を更新</button>
+          </div>
+          <textarea class="export-box" id="exportText" readonly aria-label="出力CSV"></textarea>
           <button class="secondary danger" id="clearData">全データを削除</button>
           <p class="hint">データはこの端末のブラウザ内に保存されます。サーバーには送信しません。</p>
         </div>
@@ -611,6 +629,7 @@
       $("#progressPill").textContent = total ? `${state.current + 1} / ${total}` : "0 / 0";
       $("#countLabel").textContent = `${total}件`;
       $("#queueLabel").textContent = total ? `次の架電先` : "架電リストなし";
+      updateExportPreview();
 
       if (!contact) {
         $("#targetName").textContent = "CSVを追加してください";
@@ -769,6 +788,12 @@
       return [header.join(","), ...lines].join("\n");
     }
 
+    function updateExportPreview() {
+      const box = $("#exportText");
+      if (!box) return;
+      box.value = state.contacts.length ? toCsv() : "出力できるリストがありません";
+    }
+
     function csvCell(value) {
       const text = String(value || "");
       return /[",\n\r]/.test(text) ? `"${text.replace(/"/g, "\"\"")}"` : text;
@@ -782,13 +807,14 @@
       toast.timer = window.setTimeout(() => element.classList.remove("show"), 1800);
     }
 
+    function switchTab(name) {
+      $$(".tab").forEach((item) => item.classList.toggle("active", item.dataset.tab === name));
+      $$(".tab-panel").forEach((item) => item.classList.toggle("active", item.id === `tab-${name}`));
+      if (name === "export") updateExportPreview();
+    }
+
     $$(".tab").forEach((tab) => {
-      tab.addEventListener("click", () => {
-        $$(".tab").forEach((item) => item.classList.remove("active"));
-        $$(".tab-panel").forEach((item) => item.classList.remove("active"));
-        tab.classList.add("active");
-        $(`#tab-${tab.dataset.tab}`).classList.add("active");
-      });
+      tab.addEventListener("click", () => switchTab(tab.dataset.tab));
     });
 
     $$(".status").forEach((button) => {
@@ -809,6 +835,23 @@
         toast("電話番号をコピーしました");
       } catch {
         toast("コピーできませんでした");
+      }
+    });
+
+    $("#openExport").addEventListener("click", () => {
+      switchTab("export");
+      toast("出力タブを開きました");
+    });
+
+    $("#copyListCsv").addEventListener("click", async () => {
+      if (!state.contacts.length) return toast("コピーするリストがありません");
+      try {
+        await navigator.clipboard.writeText(toCsv());
+        toast("リストをコピーしました");
+      } catch {
+        switchTab("export");
+        $("#exportText").select();
+        toast("出力欄を選択しました");
       }
     });
 
@@ -884,6 +927,7 @@
     });
 
     $("#exportCsv").addEventListener("click", () => {
+      if (!state.contacts.length) return toast("出力するリストがありません");
       const blob = new Blob([toCsv()], { type: "text/csv;charset=utf-8" });
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
@@ -894,12 +938,35 @@
     });
 
     $("#copyCsv").addEventListener("click", async () => {
+      if (!state.contacts.length) return toast("コピーするリストがありません");
       try {
         await navigator.clipboard.writeText(toCsv());
         toast("CSVをコピーしました");
       } catch {
-        toast("コピーできませんでした");
+        $("#exportText").select();
+        toast("出力欄を選択しました");
       }
+    });
+
+    $("#shareCsv").addEventListener("click", async () => {
+      if (!state.contacts.length) return toast("共有するリストがありません");
+      if (!navigator.share) {
+        $("#exportText").select();
+        return toast("共有非対応なので出力欄を選択しました");
+      }
+      try {
+        await navigator.share({
+          title: "テレアポ架電リスト",
+          text: toCsv()
+        });
+      } catch {
+        toast("共有をキャンセルしました");
+      }
+    });
+
+    $("#refreshExport").addEventListener("click", () => {
+      updateExportPreview();
+      toast("出力表示を更新しました");
     });
 
     $("#clearData").addEventListener("click", () => {
