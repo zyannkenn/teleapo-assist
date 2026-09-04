@@ -301,6 +301,20 @@
       gap: 8px;
     }
 
+    .file-picker {
+      display: grid;
+      gap: 8px;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfcfa;
+    }
+
+    .file-picker input {
+      padding: 10px;
+      background: #fff;
+    }
+
     .secondary {
       min-height: 46px;
       border-radius: 8px;
@@ -505,6 +519,15 @@
         </div>
 
         <div class="tab-panel" id="tab-import" role="tabpanel">
+          <div class="section-title">
+            <h3>CSVファイル取り込み</h3>
+            <span>スマホから選択</span>
+          </div>
+          <div class="file-picker">
+            <input id="csvFile" type="file" accept=".csv,text/csv" aria-label="CSVファイルを選択">
+            <p class="hint">Androidのファイル、Google Drive、ダウンロード内のCSVを選べます。</p>
+          </div>
+
           <div class="section-title">
             <h3>CSV貼り付け</h3>
             <span>名前,会社,電話</span>
@@ -809,6 +832,29 @@
       persist();
       render();
       toast(`${contacts.length}件取り込みました`);
+    });
+
+    $("#csvFile").addEventListener("change", async (event) => {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+
+      try {
+        const text = await file.text();
+        const contacts = rowsToContacts(parseCsv(text));
+        if (!contacts.length) {
+          event.target.value = "";
+          return toast("取り込める行がありません");
+        }
+        state.contacts.push(...contacts);
+        if (state.contacts.length === contacts.length) state.current = 0;
+        persist();
+        render();
+        toast(`${contacts.length}件取り込みました`);
+      } catch {
+        toast("CSVを読み込めませんでした");
+      } finally {
+        event.target.value = "";
+      }
     });
 
     $("#loadSample").addEventListener("click", () => {
